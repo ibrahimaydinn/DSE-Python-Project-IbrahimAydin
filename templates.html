@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DSE-Python-Project-IbrahimAydin</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        input { padding: 10px; width: 60%; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; background-color: #4682b4; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #315f85; }
+        #result { margin-top: 20px; padding: 15px; border-radius: 5px; background: #f9f9f9; display: none; }
+        .metric { font-size: 14px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Stock Forecaster</h2>
+        <p class="metric">Basic Technical Analysis Module</p>
+        
+        <input type="text" id="ticker" value="YKBNK.IS" placeholder="Enter Ticker (e.g. THYAO.IS)">
+        <br>
+        <button onclick="fetchAnalysis()">Analyze</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function fetchAnalysis() {
+            const ticker = document.getElementById('ticker').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '<i>Processing data...</i>';
+            
+            try {
+                const response = await fetch(`/api/analyze?ticker=${ticker}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = `<span style="color: red;">Error: ${data.error}</span>`;
+                } else {
+                    resultDiv.innerHTML = `
+                        <h3>${data.ticker}</h3>
+                        <p><strong>Latest Price:</strong> ${data.last_price}</p>
+                        <h2 style="margin: 10px 0;">${data.action}</h2>
+                        <p class="metric">SMA 20: ${data.sma_20} | SMA 50: ${data.sma_50}</p>
+                    `;
+                }
+            } catch (err) {
+                resultDiv.innerHTML = `<span style="color: red;">Failed to connect to backend.</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
